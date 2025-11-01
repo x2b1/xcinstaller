@@ -1,0 +1,10 @@
+- Update constants.go: Change ReleaseUrl to x2b1/testcord, InstallerReleaseUrl to x2b1/xcinstaller, remove fallbacks, update UserAgent to TestCordInstaller
+- Update patcher.go: Change BaseDir to "TestCord", EquicordDirectory to TestCordDirectory, asar to "testcord.asar"
+- Update gui.go: Change ReleaseUrl, messages, directory references
+- Update github_downloader.go: Change ReleaseUrl, ReleaseUrlFallback removal
+- Update cli.go: Change messages
+- Update self_updater.go: Change BaseUrl to x2b1/xcinstaller
+- Update install.sh: Change URL to x2b1/xcinstaller
+- Update install.ps1: Change URL to x2b1/xcinstaller
+- Update winres/winres.json: Change description, CompanyName to TestCord
+- Update README.md: Change links, descriptions

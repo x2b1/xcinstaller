@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: GPL-3.0
- * Vencord Installer, a cross platform gui/cli app for installing Vencord
- * Copyright (c) 2023 Vendicated and Vencord contributors
+ * TestCord Installer, a cross platform gui/cli app for installing TestCord
+ * Copyright (c) 2025 x2b1 and TestCord contributors
  */
 
 package main
@@ -33,7 +33,7 @@ func init() {
 	go func() {
 		Log.Debug("Checking for Installer Updates...")
 
-		res, err := GetGithubRelease(InstallerReleaseUrl, InstallerReleaseUrlFallback)
+		res, err := GetGithubRelease(InstallerReleaseUrl, InstallerReleaseUrl)
 		if err != nil {
 			Log.Warn("Failed to check for self updates:", err)
 			SelfUpdateCheckDoneChan <- false
@@ -46,15 +46,15 @@ func init() {
 }
 
 func GetInstallerDownloadLink() string {
-	const BaseUrl = "https://github.com/Equicord/Equilotl/releases/latest/download/"
+	const BaseUrl = "https://github.com/x2b1/xcinstaller/releases/latest/download/"
 	switch runtime.GOOS {
 	case "windows":
-		filename := Ternary(buildinfo.UiType == buildinfo.UiTypeCli, "EquilotlCli.exe", "Equilotl.exe")
+		filename := Ternary(buildinfo.UiType == buildinfo.UiTypeCli, "xcinstallerCli.exe", "xcinstaller.exe")
 		return BaseUrl + filename
 	case "darwin":
-		return BaseUrl + "Equilotl.MacOS.zip"
+		return BaseUrl + "xcinstaller.MacOS.zip"
 	case "linux":
-		return BaseUrl + "EquilotlCli-linux"
+		return BaseUrl + "xcinstallerCli-linux"
 	default:
 		return ""
 	}
@@ -90,7 +90,7 @@ func UpdateSelf() error {
 	}
 	defer res.Body.Close()
 
-	tmp, err := os.CreateTemp(ownExeDir, "EquilotlUpdate")
+	tmp, err := os.CreateTemp(ownExeDir, "xcinstallerUpdate")
 	if err != nil {
 		return fmt.Errorf("Failed to create tempfile: %w", err)
 	}

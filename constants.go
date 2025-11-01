@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: GPL-3.0
- * Vencord Installer, a cross platform gui/cli app for installing Vencord
- * Copyright (c) 2023 Vendicated and Vencord contributors
+ * TestCord Installer, a cross platform gui/cli app for installing TestCord
+ * Copyright (c) 2025 x2b1 and TestCord contributors
  */
 
 package main
@@ -11,12 +11,13 @@ import (
 	"vencord/buildinfo"
 )
 
-const ReleaseUrl = "https://api.github.com/repos/Equicord/Equicord/releases/latest"
-const ReleaseUrlFallback = "https://equicord.org/releases/equicord"
-const InstallerReleaseUrl = "https://api.github.com/repos/Equicord/Equilotl/releases/latest"
-const InstallerReleaseUrlFallback = "https://equicord.org/releases/equilotl"
+const ReleaseUrl = "https://api.github.com/repos/x2b1/testcord/releases/latest"
+const ReleaseUrlFallback = "https://testcord.org/releases/testcord"
+const InstallerReleaseUrl = "https://api.github.com/repos/x2b1/xcinstaller/releases/latest"
+const InstallerReleaseUrlFallback = "https://testcord.org/releases/xcinstaller"
 
-var UserAgent = "Equilotl/" + buildinfo.InstallerGitHash + " (https://github.com/Equicord/Equilotl)"
+
+var UserAgent = "TestCordInstaller/" + buildinfo.InstallerGitHash + " (https://github.com/x2b1/xcinstaller)"
 
 var (
 	DiscordGreen  = color.RGBA{R: 0x2D, G: 0x7C, B: 0x46, A: 0xFF}

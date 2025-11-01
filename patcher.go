@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: GPL-3.0
- * Vencord Installer, a cross platform gui/cli app for installing Vencord
- * Copyright (c) 2023 Vendicated and Vencord contributors
+ * TestCord Installer, a cross platform gui/cli app for installing TestCord
+ * Copyright (c) 2025 x2b1 and TestCord contributors
  */
 
 package main
@@ -18,20 +18,20 @@ import (
 
 var BaseDir string
 var BaseDirErr error
-var EquicordDirectory string
+var TestCordDirectory string
 
 func init() {
-	if dir := os.Getenv("EQUICORD_USER_DATA_DIR"); dir != "" {
-		Log.Debug("Using EQUICORD_USER_DATA_DIR")
+	if dir := os.Getenv("TESTCORD_USER_DATA_DIR"); dir != "" {
+		Log.Debug("Using TESTCORD_USER_DATA_DIR")
 		BaseDir = dir
 	} else if dir = os.Getenv("DISCORD_USER_DATA_DIR"); dir != "" {
-		Log.Debug("Using DISCORD_USER_DATA_DIR/../EquicordData")
-		BaseDir = path.Join(dir, "..", "EquicordData")
+		Log.Debug("Using DISCORD_USER_DATA_DIR/../TestCordData")
+		BaseDir = path.Join(dir, "..", "TestCordData")
 	} else {
 		Log.Debug("Using UserConfig")
-		BaseDir = appdir.New("Equicord").UserConfig()
+		BaseDir = appdir.New("TestCord").UserConfig()
 	}
-	dir := os.Getenv("EQUICORD_DIRECTORY")
+	dir := os.Getenv("TESTCORD_DIRECTORY")
 	if dir == "" {
 		if !ExistsFile(BaseDir) {
 			BaseDirErr = os.Mkdir(BaseDir, 0755)
@@ -43,10 +43,10 @@ func init() {
 		}
 	}
 	if dir != "" {
-		Log.Debug("Using EQUICORD_DIRECTORY")
-		EquicordDirectory = dir
+		Log.Debug("Using TESTCORD_DIRECTORY")
+		TestCordDirectory = dir
 	} else {
-		EquicordDirectory = path.Join(BaseDir, "equicord.asar")
+		TestCordDirectory = path.Join(BaseDir, "testcord.asar")
 	}
 }
 
@@ -99,7 +99,7 @@ func patchAppAsar(dir string, isSystemElectron bool) (err error) {
 	}
 
 	Log.Debug("Writing custom app.asar to", appAsar)
-	if err := WriteAppAsar(appAsar, EquicordDirectory); err != nil {
+	if err := WriteAppAsar(appAsar, TestCordDirectory); err != nil {
 		return err
 	}
 
@@ -149,14 +149,14 @@ func (di *DiscordInstall) patch() error {
 			}
 		}
 
-		Log.Debug("This is a flatpak. Trying to grant the Flatpak access to", EquicordDirectory+"...")
+		Log.Debug("This is a flatpak. Trying to grant the Flatpak access to", TestCordDirectory+"...")
 
 		isSystemFlatpak := strings.HasPrefix(di.path, "/var")
 		var args []string
 		if !isSystemFlatpak {
 			args = append(args, "--user")
 		}
-		args = append(args, "override", name, "--filesystem="+EquicordDirectory)
+		args = append(args, "override", name, "--filesystem="+TestCordDirectory)
 		fullCmd := "flatpak " + strings.Join(args, " ")
 
 		Log.Debug("Running", fullCmd)
@@ -177,7 +177,7 @@ func (di *DiscordInstall) patch() error {
 			err = cmd.Run()
 		}
 		if err != nil {
-			return errors.New("Failed to grant Discord Flatpak access to " + EquicordDirectory + ": " + err.Error())
+			return errors.New("Failed to grant Discord Flatpak access to " + TestCordDirectory + ": " + err.Error())
 		}
 	}
 	return nil
