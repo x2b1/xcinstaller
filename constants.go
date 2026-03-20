@@ -12,7 +12,7 @@ import (
 )
 
 const ReleaseUrl = "https://api.github.com/repos/x2b1/testcord/releases/tags/latest"
-const ReleaseUrlFallback = "https://testcord.org/releases/testcord"
+const ReleaseUrlFallback = "https://github.com/x2b1/TestCord/releases/tag/latest"
 const InstallerReleaseUrl = "https://api.github.com/repos/x2b1/xcinstaller/releases/latest"
 const InstallerReleaseUrlFallback = "https://testcord.org/releases/xcinstaller"
 
