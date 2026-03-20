@@ -11,7 +11,7 @@ import (
 	"vencord/buildinfo"
 )
 
-const ReleaseUrl = "https://api.github.com/repos/x2b1/testcord/releases/latest"
+const ReleaseUrl = "https://api.github.com/repos/x2b1/testcord/releases/tags/latest"
 const ReleaseUrlFallback = "https://testcord.org/releases/testcord"
 const InstallerReleaseUrl = "https://api.github.com/repos/x2b1/xcinstaller/releases/latest"
 const InstallerReleaseUrlFallback = "https://testcord.org/releases/xcinstaller"
