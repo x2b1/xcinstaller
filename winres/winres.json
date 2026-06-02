@@ -9,7 +9,7 @@
   "RT_MANIFEST": {
     "#1": {
       "0409": {
-        "description": "An Installer for the Equicord Discord Mod",
+        "description": "An Installer for the Testcord Discord Mod",
         "minimum-os": "win10",
         "execution-level": "as invoker",
         "dpi-awareness": "system"
@@ -21,11 +21,11 @@
       "0000": {
         "info": {
           "0409": {
-            "Comments": "Comments",
-            "CompanyName": "Equicord",
-            "FileDescription": "Equilotl",
-            "LegalCopyright": "© 2026 Vencord & Equicord contributors - GPL3.0",
-            "ProductName": "Equilotl",
+            "Comments": "Testcord Installer",
+            "CompanyName": "Testcord",
+            "FileDescription": "TestcordInstaller",
+            "LegalCopyright": "2026 Testcord contributors - GPL3.0",
+            "ProductName": "TestcordInstaller",
             "ProductVersion": ""
           }
         }

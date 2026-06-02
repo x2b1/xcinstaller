@@ -725,19 +725,19 @@ func loop() {
 				g.Dummy(0, 20),
 
 				g.Row(
-					g.Label(Ternary(IsDevInstall, "Dev Install: ", "TestCord will be downloaded to: ")+EquicordDirectory),
+					g.Label(Ternary(IsDevInstall, "Dev Install: ", "TestCord will be downloaded to: ")+TestCordDirectory),
 					g.Style().
 						SetColor(g.StyleColorButton, DiscordBlue).
 						SetStyle(g.StyleVarFramePadding, 4, 4).
 						To(
 							g.Button("Open Directory").OnClick(func() {
-								g.OpenURL("file://" + path.Dir(EquicordDirectory))
+								g.OpenURL("file://" + path.Dir(TestCordDirectory))
 							}),
 						),
 				),
 
 				&CondWidget{!IsDevInstall, func() g.Widget {
-					return g.Label("To customise this location, set the environment variable 'EQUICORD_USER_DATA_DIR' and restart me").Wrapped(true)
+					return g.Label("To customise this location, set the environment variable 'TESTCORD_USER_DATA_DIR' and restart me").Wrapped(true)
 				}, nil},
 
 				g.Dummy(0, 10),
