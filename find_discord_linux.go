@@ -53,6 +53,7 @@ func init() {
 
 	DiscordDirs = []string{
 		"/usr/share",
+		"/usr/lib",
 		"/usr/lib64",
 		"/opt",
 		path.Join(Home, "Applications"),
@@ -60,8 +61,57 @@ func init() {
 		path.Join(Home, ".local/share"),
 		path.Join(Home, ".local/bin"),
 		path.Join(Home, ".dvm"),
+		path.Join(Home, ".config"),
+		path.Join(Home, ".var/app"),
 		"/var/lib/flatpak/app",
 		path.Join(Home, "/.local/share/flatpak/app"),
+	}
+}
+
+func ParseDiscordNew(p, branch string, isFlatpak bool) *DiscordInstall {
+	entries, err := os.ReadDir(p)
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			Log.Warn("Error during readdir "+p+":", err)
+		}
+		return nil
+	}
+
+	isPatched := false
+	appPath := ""
+	for _, dir := range entries {
+		if dir.IsDir() && strings.HasPrefix(dir.Name(), "app-") {
+			resources := path.Join(p, dir.Name(), "resources")
+			if !ExistsFile(resources) {
+				continue
+			}
+			dirIsPatched := ExistsFile(path.Join(resources, "_app.asar"))
+			if !dirIsPatched && !ExistsFile(path.Join(resources, "app.asar")) {
+				continue
+			}
+			app := path.Join(resources, "app")
+			if app > appPath {
+				appPath = app
+				isPatched = dirIsPatched
+			}
+		}
+	}
+
+	if appPath == "" {
+		return nil
+	}
+
+	if branch == "" {
+		branch = GetBranch(p)
+	}
+
+	return &DiscordInstall{
+		path:             p,
+		branch:           branch,
+		appPath:          appPath,
+		isPatched:        isPatched,
+		isFlatpak:        isFlatpak,
+		isSystemElectron: false,
 	}
 }
 
@@ -89,7 +139,6 @@ func ParseDiscord(p, _ string) *DiscordInstall {
 		isSystemElectron = true
 		isPatched = ExistsFile(path.Join(p, "_app.asar.unpacked"))
 	} else {
-		Log.Warn("Tried to parse invalid Location:", p)
 		return nil
 	}
 
@@ -105,11 +154,21 @@ func ParseDiscord(p, _ string) *DiscordInstall {
 
 func FindDiscords() []any {
 	var discords []any
+	seenDir := make(map[string]bool)
 	for _, dir := range DiscordDirs {
-		children, err := os.ReadDir(dir)
+		resolvedDir, err := path.EvalSymlinks(dir)
+		if err != nil {
+			continue
+		}
+		if seenDir[resolvedDir] {
+			continue
+		}
+		seenDir[resolvedDir] = true
+
+		children, err := os.ReadDir(resolvedDir)
 		if err != nil {
 			if !errors.Is(err, os.ErrNotExist) {
-				Log.Warn("Error during readdir "+dir+":", err)
+				Log.Warn("Error during readdir "+resolvedDir+":", err)
 			}
 			continue
 		}
@@ -120,11 +179,33 @@ func FindDiscords() []any {
 				continue
 			}
 
-			discordDir := path.Join(dir, name)
+			discordDir := path.Join(resolvedDir, name)
 			if discord := ParseDiscord(discordDir, ""); discord != nil {
 				Log.Debug("Found Discord install at ", discordDir)
 				discords = append(discords, discord)
 			}
+		}
+	}
+
+	for _, name := range []string{"discord", "discordcanary", "discordptb"} {
+		discordDir := path.Join(Home, ".config", name)
+		if !ExistsFile(discordDir) {
+			continue
+		}
+		if discord := ParseDiscordNew(discordDir, GetBranch(name), false); discord != nil {
+			Log.Debug("Found Discord install at ", discordDir)
+			discords = append(discords, discord)
+		}
+	}
+
+	for _, name := range []string{"Discord", "DiscordCanary", "DiscordPTB"} {
+		discordDir := path.Join(Home, ".var/app", "com.discordapp."+name, "config/discord")
+		if !ExistsFile(discordDir) {
+			continue
+		}
+		if discord := ParseDiscordNew(discordDir, GetBranch(name), true); discord != nil {
+			Log.Debug("Found Discord install at ", discordDir)
+			discords = append(discords, discord)
 		}
 	}
 

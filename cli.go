@@ -9,17 +9,27 @@
 package main
 
 import (
+	"bytes"
+	"equilotl/buildinfo"
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 	"strings"
-	"vencord/buildinfo"
 
 	"github.com/fatih/color"
 	"github.com/manifoldco/promptui"
 )
+
+type noBellWriter struct{ w io.WriteCloser }
+
+func (n *noBellWriter) Write(p []byte) (int, error) {
+	return n.w.Write(bytes.ReplaceAll(p, []byte{0x07}, nil))
+}
+
+func (n *noBellWriter) Close() error { return n.w.Close() }
 
 var discords []any
 var interactive = false
@@ -63,8 +73,8 @@ func main() {
 	}
 
 	if *versionFlag {
-	fmt.Println("xcinstaller Cli", buildinfo.InstallerTag, "("+buildinfo.InstallerGitHash+")")
-	fmt.Println("Copyright (C) 2025 x2b1 and TestCord contributors")
+		fmt.Println("Testcordinstaller Cli", buildinfo.InstallerTag, "("+buildinfo.InstallerGitHash+")")
+		fmt.Println("Copyright (C) 2026 Vendicated, thororen1234, Vencord, Equicord and Testcord contributors")
 		fmt.Println("License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.")
 		return
 	}
@@ -103,7 +113,7 @@ func main() {
 			<-SelfUpdateCheckDoneChan
 			if IsSelfOutdated {
 				Log.Warn("Your installer is outdated.")
-				Log.Warn("To update, select the 'Update xcinstaller' option to update, or run with --update-self")
+				Log.Warn("To update, select the 'Update Testcordinstaller' option to update, or run with --update-self")
 			}
 		}()
 
@@ -114,12 +124,13 @@ func main() {
 			"Install OpenAsar",
 			"Uninstall OpenAsar",
 			"View Help Menu",
-			"Update xcinstaller",
+			"Update Testcordinstaller",
 			"Quit",
 		}
 		_, choice, err := (&promptui.Select{
-			Label: "What would you like to do? (Press Enter to confirm)",
-			Items: choices,
+			Label:  "What would you like to do? (Press Enter to confirm)",
+			Items:  choices,
+			Stdout: &noBellWriter{os.Stdout},
 		}).Run()
 		handlePromptError(err)
 
@@ -231,11 +242,14 @@ func PromptDiscord(action, dir, branch string) *DiscordInstall {
 	}
 
 	if dir != "" {
+		if discord := ParseDiscordNew(dir, branch, strings.Contains(dir, "com.discordapp")); discord != nil {
+			return discord
+		}
 		if discord := ParseDiscord(dir, branch); discord != nil {
 			return discord
-		} else {
-			die(dir + " is not a valid Discord install. Hint: snap is not supported")
 		}
+
+		die(dir + " is not a valid Discord install. Hint: snap is not supported")
 	}
 
 	items := SliceMap(discords, func(d any) string {
@@ -246,8 +260,9 @@ func PromptDiscord(action, dir, branch string) *DiscordInstall {
 	items = append(items, "Custom Location")
 
 	_, choice, err := (&promptui.Select{
-		Label: "Select Discord install to " + action + " (Press Enter to confirm)",
-		Items: items,
+		Label:  "Select Discord install to " + action + " (Press Enter to confirm)",
+		Items:  items,
+		Stdout: &noBellWriter{os.Stdout},
 	}).Run()
 	handlePromptError(err)
 
@@ -257,9 +272,14 @@ func PromptDiscord(action, dir, branch string) *DiscordInstall {
 
 	for {
 		custom, err := (&promptui.Prompt{
-			Label: "Custom Discord Location",
+			Label:  "Custom Discord Location",
+			Stdout: &noBellWriter{os.Stdout},
 		}).Run()
 		handlePromptError(err)
+
+		if di := ParseDiscordNew(custom, "", strings.Contains(dir, "com.discordapp")); di != nil {
+			return di
+		}
 
 		if di := ParseDiscord(custom, ""); di != nil {
 			return di

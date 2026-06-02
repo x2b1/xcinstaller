@@ -7,6 +7,7 @@
 package main
 
 import (
+	"equilotl/buildinfo"
 	"errors"
 	"fmt"
 	"io"
@@ -15,7 +16,6 @@ import (
 	"path"
 	"runtime"
 	"time"
-	"vencord/buildinfo"
 )
 
 var IsSelfOutdated = false
@@ -46,15 +46,22 @@ func init() {
 }
 
 func GetInstallerDownloadLink() string {
-	const BaseUrl = "https://github.com/x2b1/xcinstaller/releases/latest/download/"
+	const BaseUrl = "https://github.com/TestcordDev/xcinstaller/releases/latest/download/"
 	switch runtime.GOOS {
 	case "windows":
-		filename := Ternary(buildinfo.UiType == buildinfo.UiTypeCli, "xcinstallerCli.exe", "xcinstaller.exe")
+		filename := Ternary(buildinfo.UiType == buildinfo.UiTypeCli, "TestcordinstallerCli.exe", "Testcordinstaller.exe")
 		return BaseUrl + filename
 	case "darwin":
-		return BaseUrl + "xcinstaller.MacOS.zip"
+		switch runtime.GOARCH {
+		case "amd64":
+			return BaseUrl + "Testcordinstaller-darwin-x64.zip"
+		case "arm64":
+			return BaseUrl + "Testcordinstaller-darwin-arm64.zip"
+		default:
+			return ""
+		}
 	case "linux":
-		return BaseUrl + "xcinstallerCli-linux"
+		return BaseUrl + "TestcordinstallerCli-linux"
 	default:
 		return ""
 	}
