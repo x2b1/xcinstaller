@@ -46,7 +46,7 @@ func init() {
 }
 
 func GetInstallerDownloadLink() string {
-	const BaseUrl = "https://github.com/TestcordDev/xcinstaller/releases/latest/download/"
+	const BaseUrl = "https://github.com/TestcordDev/Testcordinstaller/releases/latest/download/"
 	switch runtime.GOOS {
 	case "windows":
 		filename := Ternary(buildinfo.UiType == buildinfo.UiTypeCli, "TestcordinstallerCli.exe", "Testcordinstaller.exe")
@@ -97,7 +97,7 @@ func UpdateSelf() error {
 	}
 	defer res.Body.Close()
 
-	tmp, err := os.CreateTemp(ownExeDir, "xcinstallerUpdate")
+	tmp, err := os.CreateTemp(ownExeDir, "TestcordinstallerUpdate")
 	if err != nil {
 		return fmt.Errorf("Failed to create tempfile: %w", err)
 	}

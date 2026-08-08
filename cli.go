@@ -140,7 +140,7 @@ func main() {
 			return
 		case "Quit":
 			return
-		case "Update xcinstaller":
+		case "Update Testcordinstaller":
 			if err := UpdateSelf(); err != nil {
 				Log.Error("Failed to update self:", err)
 				exitFailure()

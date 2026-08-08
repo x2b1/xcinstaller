@@ -13,11 +13,11 @@ import (
 
 const ReleaseUrl = "https://api.github.com/repos/TestcordDev/Testcord/releases/tags/latest"
 const ReleaseUrlFallback = "https://github.com/TestcordDev/Testcord/releases/tag/latest"
-const InstallerReleaseUrl = "https://api.github.com/repos/TestcordDev/xcinstaller/releases/latest"
+const InstallerReleaseUrl = "https://api.github.com/repos/TestcordDev/Testcordinstaller/releases/latest"
 const InstallerReleaseUrlFallback = "https://testcord.org/releases/xcinstaller"
 
 
-var UserAgent = "TestCordInstaller/" + buildinfo.InstallerGitHash + " (https://github.com/TestcordDev/xcinstaller)"
+var UserAgent = "TestCordInstaller/" + buildinfo.InstallerGitHash + " (https://github.com/TestcordDev/Testcordinstaller)"
 
 var (
 	DiscordGreen  = color.RGBA{R: 0x2D, G: 0x7C, B: 0x46, A: 0xFF}
