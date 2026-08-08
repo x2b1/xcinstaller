@@ -33,10 +33,10 @@ func init() {
 	}
 	if sudoUser != "" {
 		if sudoUser == "root" {
-			panic("Equilotl must not be run as the root user. Please rerun as normal user. Use sudo or doas to run as root.")
+			panic("TestcordInstaller must not be run as the root user. Please rerun as normal user. Use sudo or doas to run as root.")
 		}
 
-		Log.Debug("Equilotl was run with root privileges, actual user is", sudoUser)
+		Log.Debug("TestcordInstaller was run with root privileges, actual user is", sudoUser)
 		Log.Debug("Looking up HOME of", sudoUser)
 
 		u, err := user.Lookup(sudoUser)
@@ -47,7 +47,7 @@ func init() {
 			_ = os.Setenv("HOME", u.HomeDir)
 		}
 	} else if os.Getuid() == 0 {
-		panic("Equilotl was run as root but neither SUDO_USER nor DOAS_USER are set. Please rerun me as a normal user, with sudo/doas, or manually set SUDO_USER to your username")
+		panic("TestcordInstaller was run as root but neither SUDO_USER nor DOAS_USER are set. Please rerun me as a normal user, with sudo/doas, or manually set SUDO_USER to your username")
 	}
 	Home = os.Getenv("HOME")
 
@@ -68,6 +68,25 @@ func init() {
 	}
 }
 
+func tryAppDir(p, appDirName string) (string, bool, []int, bool) {
+	if !strings.HasPrefix(appDirName, "app-") {
+		return "", false, nil, false
+	}
+	ver := ParseAppVersion(appDirName)
+	if ver == nil {
+		return "", false, nil, false
+	}
+	resources := path.Join(p, appDirName, "resources")
+	if !ExistsFile(resources) {
+		return "", false, nil, false
+	}
+	dirIsPatched := ExistsFile(path.Join(resources, "_app.asar"))
+	if !dirIsPatched && !ExistsFile(path.Join(resources, "app.asar")) {
+		return "", false, nil, false
+	}
+	return path.Join(resources, "app"), dirIsPatched, ver, true
+}
+
 func ParseDiscordNew(p, branch string, isFlatpak bool) *DiscordInstall {
 	entries, err := os.ReadDir(p)
 	if err != nil {
@@ -79,20 +98,28 @@ func ParseDiscordNew(p, branch string, isFlatpak bool) *DiscordInstall {
 
 	isPatched := false
 	appPath := ""
-	for _, dir := range entries {
-		if dir.IsDir() && strings.HasPrefix(dir.Name(), "app-") {
-			resources := path.Join(p, dir.Name(), "resources")
-			if !ExistsFile(resources) {
+
+	if target, err := os.Readlink(path.Join(p, "Discord")); err == nil {
+		if a, ip, _, ok := tryAppDir(p, path.Base(path.Dir(target))); ok {
+			appPath = a
+			isPatched = ip
+		}
+	}
+
+	if appPath == "" {
+		var latestVer []int
+		for _, dir := range entries {
+			if !dir.IsDir() {
 				continue
 			}
-			dirIsPatched := ExistsFile(path.Join(resources, "_app.asar"))
-			if !dirIsPatched && !ExistsFile(path.Join(resources, "app.asar")) {
+			a, ip, ver, ok := tryAppDir(p, dir.Name())
+			if !ok {
 				continue
 			}
-			app := path.Join(resources, "app")
-			if app > appPath {
-				appPath = app
-				isPatched = dirIsPatched
+			if appPath == "" || CompareAppVersion(ver, latestVer) > 0 {
+				appPath = a
+				isPatched = ip
+				latestVer = ver
 			}
 		}
 	}

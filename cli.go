@@ -74,7 +74,7 @@ func main() {
 
 	if *versionFlag {
 		fmt.Println("Testcordinstaller Cli", buildinfo.InstallerTag, "("+buildinfo.InstallerGitHash+")")
-		fmt.Println("Copyright (C) 2026 Vendicated, thororen1234, Vencord, Equicord and Testcord contributors")
+		fmt.Println("Copyright (C) 2026 Vendicated, thororen1234, Vencord, Equicord, TestcordDev and Testcord contributors")
 		fmt.Println("License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.")
 		return
 	}

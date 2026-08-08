@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: GPL-3.0
  * TestCord Installer, a cross platform gui/cli app for installing TestCord
- * Copyright (c) 2025 x2b1 and TestCord contributors
+ * Copyright (c) 2025 TestcordDev and TestCord contributors
  */
 
 package main
